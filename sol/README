@@ -1,0 +1,15 @@
+Stingescu Andrei Petrut, 334CC, Tema 3 APD
+
+Tema a fost efectuata integral impreuna cu bonusul in limbajul C++, utilizand programarea distribuita in MPI.
+
+Rezolvarea primei etape s-a efectuat astfel:
+
+Pentru salvarea topologiei am folosit o matrice, iar fiecare linie reprezinta rank-ul fiecarui coordonator, iar in fiecare linie se afla rank-urile fiecarui proces de tip worker asignat coordonatorului sau. Pentru trimitea/receptionarea mesajelor de tip M(i,j) am folosit doua string-uri send_message si recv_message. (inainte de a trimite mesajul, mai intai trimit lungimea mesajului)
+Prima data iterez prin lista de coordonatori si verific daca rank-ul procesului curent este unul de tip coordonator. Apoi deschid fisierul asignat lui si adaug in matrice lista de procese de tip worker (matrix[i][0] va reprezenta numarul de procese de tip worker, iar i va fi indicele coordonatorului). Mai departe, coordonatori vor comunica intre ei si isi vor trimite mesaje + informatii pentru completarea topologiei. Coordonatorii isi vor trimite / receptiona mesaje conform topologiei din bonus  Comunicarea dintre coordonatori si procesele de tip worker este realizata intre liniile 154 - 172, astfel se va trimite intreaga topologie obtinuta catre fiecare worker si un mesaj de tip M(i,j), iar acestia la randul lor vor trimite un mesaj de receptionare.
+In cazul in care rank-ul procesului este unul de tip worker(coordinator == false), atunci procesul va accesa informatia primita si anume mesajul + topologia. Un detaliu foarte important legat de partajarea topologiei este ca fiecare linie din matrice a fost transmisa mai departe catre toate procesele. La final fiecare proces va putea afisa intreaga topologie
+
+Rezolvarea etapei 2 s-a efectuat astfel:
+
+In total_workers am retinut numarul total de procese de tip worker si in vectorul positions am adaugat noile pozitii pentru aceste procese cu scopul de a echilibra calculele asupra vectorului. 
+Pentru primul coordonator(cel cu id 0), pun elementele in vector si il transmit mai departe
+catre coordonatorul 2 si catre fiecare worker de al sau. Acesta va astepta sa primesca partea de vector modicata de la ceilalti coordonatori( prin intermediul coordonatorului 2). Coordonatorul 2 va trebui sa trimita inapoi lui 0 atat partea din vector destinata cluster-ului sau cat si pe cea a coordonatorului 1, in momentul in care s-au realizat toate calculele. Un proces de tip worker va realiza calculele asupra vectorului pe baza pozitiei sale din vectorul "positions", va prelucra vectorul pe zona asignata lui cu ajutorul variabilelor de pozitie start si end. In final toate procesele de tip worker vor trimite vectorul cu zonele prelucrate la coordonatorii lor, iar acestia la randul lor vor trimite coordonatorului de tip 0, conform topologiei din enuntul cu Bonus. In final, se va afisa vectorul multiplicat cu 2.
